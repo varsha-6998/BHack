@@ -1,7 +1,15 @@
+// Add this at the very top of your server.js file
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Promise Rejection:', reason);
+    // Optionally, you can add logic to gracefully shut down the app or log it to a monitoring service
+});
+
+// Your existing server.js code follows...
+
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose"); 
+const mongoose = require("mongoose");
 const { getIntent } = require("../nlp/model"); // Import intent detection
 const { toolCalling } = require("./tool_calling"); // Import tool calling
 const { saveInteraction } = require("./db"); // Import MongoDB function
@@ -12,11 +20,9 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // ✅ Connect to MongoDB
-mongoose.connect("mongodb://localhost:27017/loan_chatbot", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("Connected to MongoDB"))
-.catch(err => console.error("MongoDB Connection Error:", err));
+mongoose.connect("mongodb://localhost:27017/loan_chatbot")
+  .then(() => console.log("Connected to MongoDB"))
+  .catch(err => console.error("MongoDB Connection Error:", err));
 
 // ✅ Define Schema & Model
 const intentSchema = new mongoose.Schema({
