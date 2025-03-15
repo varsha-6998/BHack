@@ -1,17 +1,15 @@
-# tool_calling/tool_caller.py
-
-import openai
+import google.generativeai as genai
 import json
 import os
 from tools import TOOLS
 from dotenv import load_dotenv
 
-# Load API key from .env
+# Load API key from environment
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Initialize OpenAI client
-openai.api_key = OPENAI_API_KEY
+# Configure Gemini API with the key
+genai.configure(api_key=API_KEY)
 
 def call_tool(tool_name, user_data):
     """Dynamically calls the appropriate tool based on intent."""
@@ -20,31 +18,20 @@ def call_tool(tool_name, user_data):
     return {"error": "Invalid tool"}
 
 def analyze_intent_and_call_tool(user_input):
-    """Uses OpenAI to determine intent and call the correct tool."""
-    response = openai.ChatCompletion.create(
-        model="gpt-4-turbo",
-        messages=[{"role": "user", "content": user_input}],
-        functions=[
-            {
-                "name": "check_loan_eligibility",
-                "description": "Check if a user is eligible for a loan",
-                "parameters": {"type": "object", "properties": {"user_data": {"type": "object"}}}
-            },
-            {
-                "name": "guide_loan_application",
-                "description": "Provide guidance for loan application",
-                "parameters": {"type": "object", "properties": {"user_data": {"type": "object"}}}
-            }
-        ]
-    )
+    """Uses Gemini to determine intent and call the correct tool."""
+    model = genai.GenerativeModel("gemini-1.0-pro")
+    response = model.generate_content(user_input)
 
-    # Extract tool name and parameters
-    if response["choices"][0]["message"].get("function_call"):
-        tool_name = response["choices"][0]["message"]["function_call"]["name"]
-        tool_params = json.loads(response["choices"][0]["message"]["function_call"]["arguments"])
-        return call_tool(tool_name, tool_params["user_data"])
+    # Extract intent from Gemini's response
+    intent = response.text.lower()
 
-    return {"message": "No action needed"}
+    # Simple intent detection
+    if "eligibility" in intent:
+        return call_tool("check_loan_eligibility", {"user_input": user_input})
+    if "apply" in intent or "application" in intent:
+        return call_tool("guide_loan_application", {"user_input": user_input})
+
+    return {"message": "No clear intent detected"}
 
 if __name__ == "__main__":
     user_input = input("Enter your request: ")
