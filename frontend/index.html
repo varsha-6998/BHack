@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Chatbot UI</title>
+    <title>ChAt-Bot</title>
+
+    <link rel="stylesheet" href="style.css"> <!--linking css file-->
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h3>Finch from Sendbird</h3>
-        </div>
-        <div class="chat-body">
-            <div class="message bot">Hi! 👋 I'm Finch, and I'll be your guide to Sendbird today.</div>
-            <div class="message bot">What interests you about customer communications?</div>
+    <!--chat window-->
+    <div class = "chat-container">
 
-            <div class="options">
-                <button>An AI chatbot to suggest products, generate leads, or handle customer inquiries</button>
-                <button>Omnichannel business messaging</button>
-                <button class="selected">Secure and scalable in-app chat</button>
-            </div>
-
-            <div class="message bot">Great choice! Which industry are you in? Or what specific challenges or use cases would you like to address?</div>
+        <!--header for logo-->
+        <div class = "header">
+            <img src="logo.png" alt="Logo" class="logo">
         </div>
-        <div class="chat-footer">Powered by Sendbird</div>
+
+        <div class="message-container" id="messageContainer"></div>
+
+        <!--user input box-->
+        <input type="text" id="userInput" class="input-box" placeholder="Ask me anything..."onkeydown="handleInput(event)">
+
     </div>
+    <script src="script.js"></script> <!-- Link to JS -->
+    
+    
 </body>
 </html>
